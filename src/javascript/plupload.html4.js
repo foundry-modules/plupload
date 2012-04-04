@@ -30,13 +30,13 @@
 		 *
 		 * @return {Object} Name/value object with supported features.
 		 */
-		getFeatures : function() {			
+		getFeatures : function() {
 			// Only multipart feature
 			return {
 				multipart: true,
-				
+
 				// WebKit and Gecko 2+ can trigger file dialog progrmmatically
-				triggerDialog: (plupload.ua.gecko && window.FormData || plupload.ua.webkit) 
+				triggerDialog: (plupload.ua.gecko && window.FormData || plupload.ua.webkit)
 			};
 		},
 
@@ -59,13 +59,13 @@
 					ext = filters[i].extensions.split(/,/);
 
 					for (y = 0; y < ext.length; y++) {
-						
+
 						// If there's an asterisk in the list, then accept attribute is not required
 						if (ext[y] === '*') {
 							mimes = [];
 							break no_type_restriction;
 						}
-						
+
 						type = plupload.mimeTypes[ext[y]];
 
 						if (type && plupload.inArray(type, mimes) === -1) {
@@ -73,7 +73,7 @@
 						}
 					}
 				}
-				
+
 				mimes = mimes.join(',');
 
 				function createForm() {
@@ -81,7 +81,7 @@
 
 					// Setup unique id for form
 					currentFileId = plupload.guid();
-					
+
 					// Save id for Destroy handler
 					fileIds.push(currentFileId);
 
@@ -100,9 +100,9 @@
 					input.setAttribute('type', 'file');
 					input.setAttribute('accept', mimes);
 					input.setAttribute('size', 1);
-					
+
 					browseButton = getById(up.settings.browse_button);
-					
+
 					// Route click event to input element programmatically, if possible
 					if (up.features.triggerDialog && browseButton) {
 						plupload.addEvent(getById(up.settings.browse_button), 'click', function(e) {
@@ -121,7 +121,7 @@
 						fontSize: '99px', // force input element to be bigger then needed to occupy whole space
 						cursor: 'pointer'
 					});
-					
+
 					plupload.extend(form.style, {
 						overflow: 'hidden'
 					});
@@ -152,12 +152,12 @@
 
 							// Push files
 							files.push(new plupload.File(currentFileId, name));
-							
+
 							// Clean-up events - they won't be needed anymore
 							if (!up.features.triggerDialog) {
-								plupload.removeAllEvents(form, up.id);								
+								plupload.removeAllEvents(form, up.id);
 							} else {
-								plupload.removeEvent(browseButton, 'click', up.id);	
+								plupload.removeEvent(browseButton, 'click', up.id);
 							}
 							plupload.removeEvent(input, 'change', up.id);
 
@@ -167,7 +167,7 @@
 							// Fire FilesAdded event
 							if (files.length) {
 								uploader.trigger("FilesAdded", files);
-							}							
+							}
 						}
 					}, up.id);
 
@@ -211,7 +211,7 @@
 
 						// Get result
 						result = el.body.innerHTML;
-						
+
 						// Assume no error
 						if (result) {
 							currentFile.status = plupload.DONE;
@@ -225,18 +225,18 @@
 						}
 					}, up.id);
 				} // end createIframe
-				
+
 				if (up.settings.container) {
 					container = getById(up.settings.container);
 					if (plupload.getStyle(container, 'position') === 'static') {
 						container.style.position = 'relative';
 					}
 				}
-				
+
 				// Upload file
 				up.bind("UploadFile", function(up, file) {
 					var form, input;
-					
+
 					// File upload finished
 					if (file.status == plupload.DONE || file.status == plupload.FAILED || up.state == plupload.STOPPED) {
 						return;
@@ -269,15 +269,15 @@
 
 					// Hide the current form
 					getById('form_' + currentFileId).style.top = -0xFFFFF + "px";
-					
+
 					form.submit();
 				});
-				
-				
-				
+
+
+
 				up.bind('FileUploaded', function(up) {
 					up.refresh(); // just to get the form back on top of browse_button
-				});				
+				});
 
 				up.bind('StateChanged', function(up) {
 					if (up.state == plupload.STARTED) {
@@ -290,7 +290,7 @@
 							}
 						}, 0);
 					}
-					
+
 					plupload.each(up.files, function(file, i) {
 						if (file.status === plupload.DONE || file.status === plupload.FAILED) {
 							var form = getById('form_' + file.id);
@@ -312,15 +312,15 @@
 						browseSize = plupload.getSize(browseButton);
 						inputContainer = getById('form_' + currentFileId);
 						inputFile = getById('input_' + currentFileId);
-	
+
 						plupload.extend(inputContainer.style, {
 							top : browsePos.y + 'px',
 							left : browsePos.x + 'px',
 							width : browseSize.w + 'px',
 							height : browseSize.h + 'px'
 						});
-						
-						// for IE and WebKit place input element underneath the browse button and route onclick event 
+
+						// for IE and WebKit place input element underneath the browse button and route onclick event
 						// TODO: revise when browser support for this feature will change
 						if (up.features.triggerDialog) {
 							if (plupload.getStyle(browseButton, 'position') === 'static') {
@@ -328,7 +328,7 @@
 									position : 'relative'
 								});
 							}
-							
+
 							zIndex = parseInt(browseButton.style.zIndex, 10);
 
 							if (isNaN(zIndex)) {
@@ -337,7 +337,7 @@
 
 							plupload.extend(browseButton.style, {
 								zIndex : zIndex
-							});							
+							});
 
 							plupload.extend(inputContainer.style, {
 								zIndex : zIndex - 1
@@ -351,22 +351,22 @@
 						hoverClass = up.settings.browse_button_hover;
 						activeClass = up.settings.browse_button_active;
 						topElement = up.features.triggerDialog ? browseButton : inputContainer;
-						
+
 						if (hoverClass) {
 							plupload.addEvent(topElement, 'mouseover', function() {
-								plupload.addClass(browseButton, hoverClass);	
+								plupload.addClass(browseButton, hoverClass);
 							}, up.id);
 							plupload.addEvent(topElement, 'mouseout', function() {
 								plupload.removeClass(browseButton, hoverClass);
 							}, up.id);
 						}
-						
+
 						if (activeClass) {
 							plupload.addEvent(topElement, 'mousedown', function() {
-								plupload.addClass(browseButton, activeClass);	
+								plupload.addClass(browseButton, activeClass);
 							}, up.id);
 							plupload.addEvent(document.body, 'mouseup', function() {
-								plupload.removeClass(browseButton, activeClass);	
+								plupload.removeClass(browseButton, activeClass);
 							}, up.id);
 						}
 					}
@@ -383,21 +383,21 @@
 						}
 					}
 				});
-				
+
 				uploader.bind("DisableBrowse", function(up, disabled) {
 					var input = document.getElementById('input_' + currentFileId);
 					if (input) {
-						input.disabled = disabled;	
+						input.disabled = disabled;
 					}
 				});
-				
-				
+
+
 				// Completely destroy the runtime
 				uploader.bind("Destroy", function(up) {
 					var name, element, form,
 						elements = {
 							inputContainer: 'form_' + currentFileId,
-							inputFile: 'input_' + currentFileId,	
+							inputFile: 'input_' + currentFileId,
 							browseButton: up.settings.browse_button
 						};
 
@@ -409,7 +409,7 @@
 						}
 					}
 					plupload.removeAllEvents(document.body, up.id);
-					
+
 					// Remove mark-up
 					plupload.each(fileIds, function(id, i) {
 						form = getById('form_' + id);
@@ -417,7 +417,7 @@
 							container.removeChild(form);
 						}
 					});
-					
+
 				});
 
 				// Create initial form
@@ -427,4 +427,4 @@
 			callback({success : true});
 		}
 	});
-})(window, document, plupload);
+})(window, document, $.plupload);

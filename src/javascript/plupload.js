@@ -54,7 +54,7 @@
 		"application/vnd.openxmlformats-officedocument.wordprocessingml.document,docx," +
 		"application/vnd.openxmlformats-officedocument.wordprocessingml.template,dotx," +
 		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,xlsx," +
-		"application/vnd.openxmlformats-officedocument.presentationml.presentation,pptx," + 
+		"application/vnd.openxmlformats-officedocument.presentationml.presentation,pptx," +
 		"application/vnd.openxmlformats-officedocument.presentationml.template,potx," +
 		"application/vnd.openxmlformats-officedocument.presentationml.slideshow,ppsx," +
 		"application/x-javascript,js," +
@@ -211,7 +211,7 @@
 		 * @final
 		 */
 		FILE_EXTENSION_ERROR : -601,
-		
+
 		/**
 		 * Runtime will try to detect if image is proper one. Otherwise will throw this error.
 		 *
@@ -219,7 +219,7 @@
 		 * @final
 		 */
 		IMAGE_FORMAT_ERROR : -700,
-		
+
 		/**
 		 * While working on the image runtime will try to detect if the operation may potentially run out of memeory and will throw this error.
 		 *
@@ -227,7 +227,7 @@
 		 * @final
 		 */
 		IMAGE_MEMORY_ERROR : -701,
-		
+
 		/**
 		 * Each runtime has an upper limit on a dimension of the image it can handle. If bigger, will throw this error.
 		 *
@@ -235,7 +235,7 @@
 		 * @final
 		 */
 		IMAGE_DIMENSIONS_ERROR : -702,
-		
+
 
 		/**
 		 * Mime type lookup table.
@@ -245,17 +245,17 @@
 		 * @final
 		 */
 		mimeTypes : mimes,
-		
+
 		/**
 		 * In some cases sniffing is the only way around :(
 		 */
 		ua: (function() {
 			var nav = navigator, userAgent = nav.userAgent, vendor = nav.vendor, webkit, opera, safari;
-			
+
 			webkit = /WebKit/.test(userAgent);
 			safari = webkit && vendor.indexOf('Apple') !== -1;
 			opera = window.opera && window.opera.buildNumber;
-			
+
 			return {
 				windows: navigator.platform.indexOf('Win') !== -1,
 				ie: !webkit && !opera && (/MSIE/gi).test(userAgent) && (/Explorer/gi).test(nav.appName),
@@ -265,7 +265,7 @@
 				opera: !!opera
 			};
 		}()),
-		
+
 		/**
 		 * Gets the true type of the built-in object (better version of typeof).
 		 * @credits Angus Croll (http://javascriptweblog.wordpress.com/)
@@ -309,7 +309,7 @@
 
 			// Replace diacritics
 			lookup = [
-				/[\300-\306]/g, 'A', /[\340-\346]/g, 'a', 
+				/[\300-\306]/g, 'A', /[\340-\346]/g, 'a',
 				/\307/g, 'C', /\347/g, 'c',
 				/[\310-\313]/g, 'E', /[\350-\353]/g, 'e',
 				/[\314-\317]/g, 'I', /[\354-\357]/g, 'i',
@@ -338,7 +338,7 @@
 		 * @param {String} name Runtime name for example flash.
 		 * @param {Object} obj Object containing init/destroy method.
 		 */
-		addRuntime : function(name, runtime) {			
+		addRuntime : function(name, runtime) {
 			runtime.name = name;
 			runtimes[name] = runtime;
 			runtimes.push(runtime);
@@ -431,7 +431,7 @@
 			if (size === undef || /\D/.test(size)) {
 				return plupload.translate('N/A');
 			}
-			
+
 			// GB
 			if (size > 1073741824) {
 				return Math.round(size / 1073741824, 1) + " GB";
@@ -585,7 +585,7 @@
 
 			return arr;
 		},
-		
+
 		/**
 		 * Find an element in array and return it's index if present, otherwise return -1.
 		 *
@@ -594,12 +594,12 @@
 		 * @param {Array} array
 		 * @return {Int} Index of the element, or -1 if not found
 		 */
-		inArray : function(needle, array) {			
+		inArray : function(needle, array) {
 			if (array) {
 				if (Array.prototype.indexOf) {
 					return Array.prototype.indexOf.call(array, needle);
 				}
-			
+
 				for (var i = 0, length = array.length; i < length; i++) {
 					if (array[i] === needle) {
 						return i;
@@ -628,7 +628,7 @@
 		translate : function(str) {
 			return i18n[str] || str;
 		},
-		
+
 		/**
 		 * Checks if object is empty.
 		 *
@@ -637,13 +637,13 @@
 		 */
 		isEmptyObj : function(obj) {
 			if (obj === undef) return true;
-			
+
 			for (var prop in obj) {
-				return false;	
+				return false;
 			}
 			return true;
 		},
-		
+
 		/**
 		 * Checks if specified DOM element has specified class.
 		 *
@@ -652,7 +652,7 @@
 		 */
 		hasClass : function(obj, name) {
 			var regExp;
-		
+
 			if (obj.className == '') {
 				return false;
 			}
@@ -661,7 +661,7 @@
 
 			return regExp.test(obj.className);
 		},
-		
+
 		/**
 		 * Adds specified className to specified DOM element.
 		 *
@@ -673,7 +673,7 @@
 				obj.className = obj.className == '' ? name : obj.className.replace(/\s+$/, '')+' '+name;
 			}
 		},
-		
+
 		/**
 		 * Removes specified className from specified DOM element.
 		 *
@@ -682,12 +682,12 @@
 		 */
 		removeClass : function(obj, name) {
 			var regExp = new RegExp("(^|\\s+)"+name+"(\\s+|$)");
-			
+
 			obj.className = obj.className.replace(regExp, function($0, $1, $2) {
 				return $1 === ' ' && $2 === ' ' ? ' ' : '';
 			});
 		},
-    
+
 		/**
 		 * Returns a given computed style of a DOM element.
 		 *
@@ -713,12 +713,12 @@
 		 */
 		addEvent : function(obj, name, callback) {
 			var func, events, types, key;
-			
+
 			// if passed in, event will be locked with this key - one would need to provide it to removeEvent
 			key = arguments[3];
-						
+
 			name = name.toLowerCase();
-						
+
 			// Initialize unique identifier if needed
 			if (uid === undef) {
 				uid = 'Plupload_' + plupload.guid();
@@ -727,10 +727,10 @@
 			// Add event listener
 			if (obj.addEventListener) {
 				func = callback;
-				
+
 				obj.addEventListener(name, func, false);
 			} else if (obj.attachEvent) {
-				
+
 				func = function() {
 					var evt = window.event;
 
@@ -744,31 +744,31 @@
 					callback(evt);
 				};
 				obj.attachEvent('on' + name, func);
-			} 
-			
+			}
+
 			// Log event handler to objects internal Plupload registry
 			if (obj[uid] === undef) {
 				obj[uid] = plupload.guid();
 			}
-			
+
 			if (!eventhash.hasOwnProperty(obj[uid])) {
 				eventhash[obj[uid]] = {};
 			}
-			
+
 			events = eventhash[obj[uid]];
-			
+
 			if (!events.hasOwnProperty(name)) {
 				events[name] = [];
 			}
-					
+
 			events[name].push({
 				func: func,
 				orig: callback, // store original callback for IE
 				key: key
 			});
 		},
-		
-		
+
+
 		/**
 		 * Remove event handler from the specified object. If third argument (callback)
 		 * is not specified remove all events with the specified name.
@@ -779,54 +779,54 @@
 		 */
 		removeEvent: function(obj, name) {
 			var type, callback, key;
-			
-			// match the handler either by callback or by key	
+
+			// match the handler either by callback or by key
 			if (typeof(arguments[2]) == "function") {
 				callback = arguments[2];
 			} else {
 				key = arguments[2];
 			}
-						
+
 			name = name.toLowerCase();
-			
+
 			if (obj[uid] && eventhash[obj[uid]] && eventhash[obj[uid]][name]) {
 				type = eventhash[obj[uid]][name];
 			} else {
 				return;
 			}
-			
-				
+
+
 			for (var i=type.length-1; i>=0; i--) {
-				// undefined or not, key should match			
+				// undefined or not, key should match
 				if (type[i].key === key || type[i].orig === callback) {
-										
+
 					if (obj.removeEventListener) {
-						obj.removeEventListener(name, type[i].func, false);		
+						obj.removeEventListener(name, type[i].func, false);
 					} else if (obj.detachEvent) {
 						obj.detachEvent('on'+name, type[i].func);
 					}
-					
+
 					type[i].orig = null;
 					type[i].func = null;
-					
+
 					type.splice(i, 1);
-					
+
 					// If callback was passed we are done here, otherwise proceed
 					if (callback !== undef) {
 						break;
 					}
-				}			
-			}	
-			
+				}
+			}
+
 			// If event array got empty, remove it
 			if (!type.length) {
 				delete eventhash[obj[uid]][name];
 			}
-			
+
 			// If Plupload registry has become empty, remove it
 			if (plupload.isEmptyObj(eventhash[obj[uid]])) {
 				delete eventhash[obj[uid]];
-				
+
 				// IE doesn't let you remove DOM object property with - delete
 				try {
 					delete obj[uid];
@@ -835,8 +835,8 @@
 				}
 			}
 		},
-		
-		
+
+
 		/**
 		 * Remove all kind of events from the specified object
 		 *
@@ -845,17 +845,17 @@
 		 */
 		removeAllEvents: function(obj) {
 			var key = arguments[1];
-			
+
 			if (obj[uid] === undef || !obj[uid]) {
 				return;
 			}
-			
+
 			plupload.each(eventhash[obj[uid]], function(events, name) {
 				plupload.removeEvent(obj, name, key);
-			});		
+			});
 		}
 	};
-	
+
 
 	/**
 	 * Uploader class, an instance of this class will be created for each upload field.
@@ -976,7 +976,7 @@
 			 * @type Number
 			 */
 			state : plupload.STOPPED,
-			
+
 			/**
 			 * Current runtime name.
 			 *
@@ -1062,7 +1062,7 @@
 					// Convert extensions to regexp
 					if (filters && filters.length) {
 						extensionsRegExp = [];
-						
+
 						plupload.each(filters, function(filter) {
 							plupload.each(filter.extensions.split(/,/), function(ext) {
 								if (/^\s*\*\s*$/.test(ext)) {
@@ -1072,7 +1072,7 @@
 								}
 							});
 						});
-						
+
 						extensionsRegExp = new RegExp(extensionsRegExp.join('|') + '$', 'i');
 					}
 
@@ -1142,8 +1142,8 @@
 					if (up.state == plupload.STARTED) {
 						// Get start time to calculate bps
 						startTime = (+new Date());
-						
-					} else if (up.state == plupload.STOPPED) {						
+
+					} else if (up.state == plupload.STOPPED) {
 						// Reset currently uploading files
 						for (i = up.files.length - 1; i >= 0; i--) {
 							if (up.files[i].status == plupload.UPLOADING) {
@@ -1270,9 +1270,9 @@
 			start : function() {
 				if (files.length && this.state != plupload.STARTED) {
 					this.state = plupload.STARTED;
-					this.trigger("StateChanged");	
-					
-					uploadNext.call(this);				
+					this.trigger("StateChanged");
+
+					uploadNext.call(this);
 				}
 			},
 
@@ -1283,13 +1283,13 @@
 			 */
 			stop : function() {
 				if (this.state != plupload.STOPPED) {
-					this.state = plupload.STOPPED;	
-					this.trigger("CancelUpload");				
+					this.state = plupload.STOPPED;
+					this.trigger("CancelUpload");
 					this.trigger("StateChanged");
 				}
 			},
-			
-			/** 
+
+			/**
 			 * Disables/enables browse button on request.
 			 *
 			 * @method disableBrowse
@@ -1382,7 +1382,7 @@
 
 				return true;
 			},
-			
+
 			/**
 			 * Check whether uploader has any listeners to the specified event.
 			 *
@@ -1448,21 +1448,21 @@
 			 */
 			unbindAll : function() {
 				var self = this;
-				
+
 				plupload.each(events, function(list, name) {
 					self.unbind(name);
 				});
 			},
-			
+
 			/**
 			 * Destroys Plupload instance and cleans after itself.
 			 *
 			 * @method destroy
 			 */
-			destroy : function() {	
-				this.stop();						
+			destroy : function() {
+				this.stop();
 				this.trigger('Destroy');
-				
+
 				// Clean-up after uploader itself
 				this.unbindAll();
 			}
@@ -1487,7 +1487,7 @@
 			 * @event Refresh
 			 * @param {plupload.Uploader} uploader Uploader instance sending the event.
 			 */
-	
+
 			/**
 			 * Fires when the overall state is being changed for the upload queue.
 			 *
@@ -1518,7 +1518,7 @@
 			 * @event QueueChanged
 			 * @param {plupload.Uploader} uploader Uploader instance sending the event.
 			 */
-	
+
 			/**
 			 * Fires while a file is being uploaded. Use this event to update the current file upload progress.
 			 *
@@ -1576,7 +1576,7 @@
 			 * @param {plupload.Uploader} uploader Uploader instance sending the event.
 			 * @param {Object} error Contains code, message and sometimes file and other details.
 			 */
-			 
+
 			 /**
 			 * Fires when destroy method is called.
 			 *
@@ -1672,7 +1672,7 @@
 		};
 
 		/**
-		 * Initializes the upload runtime. This method should add necessary items to the DOM and register events needed for operation. 
+		 * Initializes the upload runtime. This method should add necessary items to the DOM and register events needed for operation.
 		 *
 		 * @method init
 		 * @param {plupload.Uploader} uploader Uploader instance that needs to be initialized.
@@ -1767,5 +1767,5 @@
 	plupload.runtimes = {};
 
 	// Expose plupload namespace
-	window.plupload = plupload;
+	$.plupload = plupload;
 })();
