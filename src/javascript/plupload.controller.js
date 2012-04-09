@@ -2,7 +2,6 @@ $.Controller("plupload",
 
 	{
 		defaultOptions: {
-
 			"{uploadButton}" : ".uploadButton",
 
 			settings: {
@@ -24,7 +23,7 @@ $.Controller("plupload",
 			// Create upload container identifier
 			var uploadContainerId = $.uid("uploadContainer-");
 
-			self.element
+            self.element
                 .attr('id', uploadContainerId);
 
 			settings.container = uploadContainerId;
@@ -37,71 +36,68 @@ $.Controller("plupload",
 
 			settings.browse_button = uploadButtonId;
 
+            // Decide where the uploader events are binded to
+            self.uploader = $(self.uploader()[0] || self.element);
+
 			// Create new plupload instance
             self.plupload = new $.plupload.Uploader(settings);
 
-            self.plupload.bind('PostInit', self['plupload::PostInit']);
-
             // @rule: Init() plupload before you bind except for postInit
+            self.plupload.bind('PostInit', function() {
+                self.eventHandler("PostInit", $.makeArray(arguments));
+            });
+
+
             self.plupload.init();
 
-            // Remap plupload event bindings
-            for (binder in self)
-            {
-                if (!binder.match("plupload::")) continue;
+            var events = [
+                "BeforeUpload",
+                "ChunkUploaded",
+                "Destroy",
+                "Error",
+                "FilesAdded",
+                "FilesRemoved",
+                "FileUploaded",
+                "Init",
+                "QueueChanged",
+                "Refresh",
+                "StateChanged",
+                "UploadComplete",
+                "UploadFile",
+                "UploadProgress"
+            ];
 
-                eventName = binder.replace("plupload::", '');
+            $.each(events, function(i, eventName) {
 
-                self.plupload.bind(eventName, self[binder]);
-            }
+                self.plupload.bind(eventName, function(){
+                    self.eventHandler(eventName, $.makeArray(arguments));
+                });
+            });
 		},
 
-        start: function() {
+        eventHandler: function(eventName, args) {
 
-            self.plupload.start();
+            var eventHandler = self["plupload::"+eventName],
+
+                elementEventHandler = (function(){
+                    var eventHandlers = (self.uploader.data("events") || {})[eventName];
+                    return (eventHandlers) ? eventHandlers[0].handler : undefined;
+                })(),
+
+                args = args.push(elementEventHandler),
+
+                triggerElementEventHandler = true;
+
+            if ($.isFunction(eventHandler)) {
+                triggerElementEventHandler = eventHandler.apply(self, arguments);
+            }
+
+            if (triggerElementEventHandler!==false) {
+                self.uploader.trigger(eventName, args);
+            }
         },
 
-        stop: function() {
-
-            self.plupload.stop();
-
-            self.complete();
-        },
-
-        complete: function() {
-
-        },
-
-        "plupload::PostInit": function(up) {
-
-        },
-
-        "plupload::FilesAdded": function(up, files) {
-
-            self.element.trigger("filesAdded", arguments);
-        },
-
-        "plupload::BeforeUpload": function(up, file) {
-
-            self.element.trigger("beforeUpload", arguments);
-        },
-
-        "plupload::UploadFile": function(up, file) {
-
-            self.element.trigger("uploadFile", arguments);
-        },
-
-        "plupload::ChunkUploaded": function(up, file) {
-
-            self.element.trigger("chunkUploaded", arguments);
-        },
-
-        "plupload::UploadProgress": function(up, file) {
-
-            self.element.trigger("uploadProgress", arguments);
-        },
-
-        "plupload::FileUploaded": function(up, file, data) {
+        "plupload::FileUploaded": function(up, file, data, handler) {
 
             var response, error;
 
@@ -118,26 +114,17 @@ $.Controller("plupload",
                     data: data
                 };
 
-                self["plupload::Error"].apply(self, [up, error]);
+                self["plupload::Error"].apply(self, [up, error, handler]);
             }
 
             if (!error) {
-                self.element.trigger("fileUploaded", [up, file, response]);
+                handler.apply(self, [up, file, response, handler]);
             }
         },
 
         "plupload::Error": function(up, error) {
 
             try { console.log('plupload Error: ', up, error); } catch(e) {};
-
-            self.element.trigger("uploadError", [up, error]);
-        },
-
-        "plupload::UploadComplete": function() {
-
-            self.complete();
-
-            self.element.trigger("uploadComplete", arguments);
         }
 
 	}}
