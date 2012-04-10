@@ -47,7 +47,6 @@ $.Controller("plupload",
                 self.eventHandler("PostInit", $.makeArray(arguments));
             });
 
-
             self.plupload.init();
 
             var events = [
@@ -84,16 +83,16 @@ $.Controller("plupload",
                     return (eventHandlers) ? eventHandlers[0].handler : undefined;
                 })(),
 
-                args = args.push(elementEventHandler),
-
-                triggerElementEventHandler = true;
+                elementEventHandlerArgs;
 
             if ($.isFunction(eventHandler)) {
-                triggerElementEventHandler = eventHandler.apply(self, arguments);
+
+                elementEventHandlerArgs = eventHandler.apply(self, args);
             }
 
-            if (triggerElementEventHandler!==false) {
-                self.uploader.trigger(eventName, args);
+            if (elementEventHandlerArgs!==false) {
+
+                self.uploader.trigger(eventName, elementEventHandlerArgs || args);
             }
         },
 
@@ -110,16 +109,13 @@ $.Controller("plupload",
                 error = {
                     code: -100,
                     message: 'Invalid response from server.',
-                    file: file,
                     data: data
                 };
 
-                self["plupload::Error"].apply(self, [up, error, handler]);
+                self.uploader.trigger("FileError", [up, file, error]);
             }
 
-            if (!error) {
-                handler.apply(self, [up, file, response, handler]);
-            }
+            return (error) ? false : [up, file, response];
         },
 
         "plupload::Error": function(up, error) {
