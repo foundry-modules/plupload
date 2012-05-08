@@ -2,6 +2,7 @@ $.Controller("plupload",
 
 	{
 		defaultOptions: {
+            "{uploader}" : ".uploader",
 			"{uploadButton}" : ".uploadButton",
 
 			settings: {
