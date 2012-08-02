@@ -1,41 +1,53 @@
 $.Controller("plupload",
 
 	{
-		defaultOptions: {
+        defaultOptions: {
             "{uploader}" : ".uploader",
-			"{uploadButton}" : ".uploadButton",
+            "{uploadButton}" : ".uploadButton",
+            "{uploadDropsite}" : ".uploadDropsite",
 
-			settings: {
-				runtimes: "html5, html4",
-				url: $.indexUrl,
-				max_file_count: 20,
-				unique_names: true
-			}
-		}
-	},
+            settings: {
+                runtimes: "html5, html4",
+                url: $.indexUrl,
+                max_file_count: 20,
+                unique_names: true
+            }
+        }
+    },
 
-	// Instance properties
-	function(self) { return {
+    // Instance properties
+    function(self) { return {
 
-		init: function() {
+        init: function() {
 
-			var settings = self.options.settings;
+            var settings = self.options.settings;
 
-			// Create upload container identifier
-			var uploadContainerId = $.uid("uploadContainer-");
+            // Create upload container identifier
+            var uploadContainerId = $.uid("uploadContainer-");
 
             self.element
                 .attr('id', uploadContainerId);
 
-			settings.container = uploadContainerId;
+            settings.container = uploadContainerId;
 
-			// Create upload button identifier
-			var uploadButtonId = $.uid("uploadButton-");
+            // Create upload button identifier
+            var uploadButtonId = $.uid("uploadButton-");
 
-			self.uploadButton()
-				.attr('id', uploadButtonId);
+            self.uploadButton()
+                .attr('id', uploadButtonId);
 
-			settings.browse_button = uploadButtonId;
+            settings.browse_button = uploadButtonId;
+
+            // Create upload drop site identifier
+            var uploadDropsiteId = $.uid("uploadDropsite-");
+
+            if (self.uploadDropsite().length > 0) {
+
+                self.uploadDropsite()
+                            .attr('id', uploadDropsiteId);
+
+                settings.drop_element = uploadDropsiteId;
+            }
 
             // Decide where the uploader events are binded to
             self.uploader = $(self.uploader()[0] || self.element);
