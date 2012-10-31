@@ -151,7 +151,7 @@
 	 * @class plupload.runtimes.Html5
 	 * @extends plupload.Runtime
 	 */
-	plupload.runtimes.Html5 = plupload.addRuntime("html5", {
+	plupload.runtimes.Html5 = (window.File===undefined) ? undefined : plupload.addRuntime("html5", {
 		/**
 		 * Returns a list of supported features for the runtime.
 		 *
