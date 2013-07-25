@@ -33,8 +33,9 @@ $.Controller("plupload",
             // Create upload button identifier
             var uploadButtonId = $.uid("uploadButton-");
 
-            self.uploadButton()
-                .attr('id', uploadButtonId);
+            self.uploadButtonMain = 
+                self.uploadButton(":first")
+                    .attr('id', uploadButtonId);
 
             settings.browse_button = uploadButtonId;
 
@@ -86,6 +87,13 @@ $.Controller("plupload",
                 });
             });
 		},
+
+        "{uploadButton} click": function(uploadButton) {
+
+            if (uploadButton[0]==self.uploadButtonMain[0]) return;
+
+            self.uploadButtonMain.click();
+        },        
 
         eventHandler: function(eventName, args) {
 
