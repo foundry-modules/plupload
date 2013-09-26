@@ -119,7 +119,7 @@ $.Controller("plupload",
 
         "plupload::FileUploaded": function(up, file, data, handler) {
 
-            var response, error;
+            var response;
 
             try {
 
@@ -127,16 +127,25 @@ $.Controller("plupload",
 
             } catch(e) {
 
-                error = {
-                    code: -100,
-                    message: 'Invalid response from server.',
+                response = {
+                    type: "error",
+                    message: "Unable to parse server response.",
                     data: data
                 };
-
-                self.uploader.trigger("FileError", [up, file, error]);
             }
 
-            return (error) ? false : [up, file, response];
+            // If response type is an error, trigger FileError event
+            if (response.type=="error") {
+
+                self.uploader.trigger("FileError", [up, file, response]);
+
+                // This ensure the FileUploaded event
+                // doesn't get triggered anymore.
+                return false;
+            }
+
+            // Trigger FileUploaded event with the following params
+            return [up, file, response];
         },
 
         "plupload::Error": function(up, error) {
