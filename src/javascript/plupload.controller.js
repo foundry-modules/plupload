@@ -31,8 +31,9 @@ $.Controller("plupload",
             settings.container = uploadContainerId;
 
             // Create upload button identifier
-            var uploadButtonId = $.uid("uploadButton-");
+            var uploadButtonId = self.uploadButtonId = $.uid("uploadButton-");
 
+            // Apply the id to the first found upload button
             self.uploadButtonMain = 
                 self.uploadButton(":first")
                     .attr('id', uploadButtonId);
@@ -53,7 +54,7 @@ $.Controller("plupload",
             // Decide where the uploader events are binded to
             self.uploader = $(self.uploader()[0] || self.element);
 
-			// Create new plupload instance
+            // Create new plupload instance
             self.plupload = new $.plupload.Uploader(settings);
 
             // @rule: Init() plupload before you bind except for postInit
@@ -86,14 +87,33 @@ $.Controller("plupload",
                     self.eventHandler(eventName, $.makeArray(arguments));
                 });
             });
-		},
+        },
 
         "{uploadButton} click": function(uploadButton) {
 
-            if (uploadButton[0]==self.uploadButtonMain[0]) return;
+            if (uploadButton[0]==self.uploadButtonMain[0]) return; 
 
-            self.uploadButtonMain.click();
-        },        
+            if (self.plupload.features.triggerDialog) {
+
+                self.uploadButtonMain.click();              
+            }
+        },
+
+        "{uploadButton} mouseover": function(uploadButton) {
+
+            // If we can trigger browser dialog programatically,
+            // don't do anything.
+            if (self.plupload.features.triggerDialog) return;
+
+            // Remove id on all upload buttons
+            self.uploadButton().removeAttr('id');
+
+            // Add to the current one
+            uploadButton.attr('id', self.uploadButtonId);
+
+            // Reposition button
+            self.plupload.refresh();
+        },   
 
         eventHandler: function(eventName, args) {
 
