@@ -1,178 +1,186 @@
 $.Controller("plupload",
+{
+	pluginName: "plupload",
+	hostname: "plupload",
 
-	{
-        defaultOptions: {
-            "{uploader}" : ".uploader",
-            "{uploadButton}" : ".uploadButton",
-            "{uploadDropsite}" : ".uploadDropsite",
+	defaultOptions: {
 
-            settings: {
-                runtimes: "html5, html4",
-                url: $.indexUrl,
-                max_file_count: 20,
-                unique_names: true
-            }
-        }
-    },
+		"{uploader}" : "[data-plupload-uploader]",
+		"{uploadButton}" : "[data-plupload-upload-button]",
+		"{uploadDropsite}" : "[data-plupload-dropsite]",
 
-    // Instance properties
-    function(self) { return {
+		settings: {
+			runtimes: "html5, html4",
+			url: $.indexUrl,
+			max_file_count: 20,
+			unique_names: true
+		}
+	}
+},
+function(self, opts, base) { return {
 
-        init: function() {
+	init: function() {
 
-            var settings = self.options.settings;
+		var settings = self.options.settings;
 
-            // Create upload container identifier
-            var uploadContainerId = $.uid("uploadContainer-");
+		// Create upload container identifier
+		var uploadContainerId = $.uid("uploadContainer-");
 
-            self.element
-                .attr('id', uploadContainerId);
+		self.element
+			.attr('id', uploadContainerId);
 
-            settings.container = uploadContainerId;
+		settings.container = uploadContainerId;
 
-            // Create upload button identifier
-            var uploadButtonId = self.uploadButtonId = $.uid("uploadButton-");
+		// Create upload button identifier
+		var uploadButtonId = self.uploadButtonId = $.uid("uploadButton-");
 
-            // Apply the id to the first found upload button
-            self.uploadButtonMain = 
-                self.uploadButton(":first")
-                    .attr('id', uploadButtonId);
+		// Apply the id to the first found upload button
+		self.uploadButtonMain =
+			self.uploadButton(":first")
+				.attr('id', uploadButtonId);
 
-            settings.browse_button = uploadButtonId;
+		settings.browse_button = uploadButtonId;
 
-            // Create upload drop site identifier
-            var uploadDropsiteId = $.uid("uploadDropsite-");
+		// Create upload drop site identifier
+		var uploadDropsiteId = $.uid("uploadDropsite-");
 
-            if (self.uploadDropsite().length > 0) {
+		if (self.uploadDropsite().length > 0) {
 
-                self.uploadDropsite()
-                            .attr('id', uploadDropsiteId);
+			self.uploadDropsite()
+						.attr('id', uploadDropsiteId);
 
-                settings.drop_element = uploadDropsiteId;
-            }
+			settings.drop_element = uploadDropsiteId;
+		}
 
-            // Decide where the uploader events are binded to
-            self.uploader = $(self.uploader()[0] || self.element);
+		// Decide where the uploader events are binded to
+		self.uploader = $(self.uploader()[0] || self.element);
 
-            // Create new plupload instance
-            self.plupload = new $.plupload.Uploader(settings);
+		// Create new plupload instance
+		self.plupload = new $.plupload.Uploader(settings);
 
-            // @rule: Init() plupload before you bind except for postInit
-            self.plupload.bind('PostInit', function() {
-                self.eventHandler("PostInit", $.makeArray(arguments));
-            });
+		// @rule: Init() plupload before you bind except for postInit
+		self.plupload.bind('PostInit', function() {
+			self.eventHandler("PostInit", $.makeArray(arguments));
+		});
 
-            self.plupload.init();
+		self.plupload.init();
 
-            var events = [
-                "BeforeUpload",
-                "ChunkUploaded",
-                "Destroy",
-                "Error",
-                "FilesAdded",
-                "FilesRemoved",
-                "FileUploaded",
-                "Init",
-                "QueueChanged",
-                "Refresh",
-                "StateChanged",
-                "UploadComplete",
-                "UploadFile",
-                "UploadProgress"
-            ];
+		var events = [
+			"BeforeUpload",
+			"ChunkUploaded",
+			"Destroy",
+			"Error",
+			"FilesAdded",
+			"FilesRemoved",
+			"FileUploaded",
+			"Init",
+			"QueueChanged",
+			"Refresh",
+			"StateChanged",
+			"UploadComplete",
+			"UploadFile",
+			"UploadProgress"
+		];
 
-            $.each(events, function(i, eventName) {
+		$.each(events, function(i, eventName) {
 
-                self.plupload.bind(eventName, function(){
-                    self.eventHandler(eventName, $.makeArray(arguments));
-                });
-            });
-        },
+			self.plupload.bind(eventName, function(){
+				self.eventHandler(eventName, $.makeArray(arguments));
+			});
+		});
 
-        "{uploadButton} click": function(uploadButton) {
+		// Indicate uploader supports drag & drop
+		if (!$.IE && self.plupload.runtime=="html5") {
 
-            if (uploadButton[0]==self.uploadButtonMain[0]) return; 
+			base.addClass("can-drop-file");
+		}
 
-            if (self.plupload.features.triggerDialog) {
+		// Indicate uploader is ready
+		base.addClass("can-upload");
+	},
 
-                self.uploadButtonMain.click();              
-            }
-        },
+	"{uploadButton} click": function(uploadButton) {
 
-        "{uploadButton} mouseover": function(uploadButton) {
+		if (uploadButton[0]==self.uploadButtonMain[0]) return;
 
-            // If we can trigger browser dialog programatically,
-            // don't do anything.
-            if (self.plupload.features.triggerDialog) return;
+		if (self.plupload.features.triggerDialog) {
 
-            // Remove id on all upload buttons
-            self.uploadButton().removeAttr('id');
+			self.uploadButtonMain.click();
+		}
+	},
 
-            // Add to the current one
-            uploadButton.attr('id', self.uploadButtonId);
+	"{uploadButton} mouseover": function(uploadButton) {
 
-            // Reposition button
-            self.plupload.refresh();
-        },   
+		// If we can trigger browser dialog programatically,
+		// don't do anything.
+		if (self.plupload.features.triggerDialog) return;
 
-        eventHandler: function(eventName, args) {
+		// Remove id on all upload buttons
+		self.uploadButton().removeAttr('id');
 
-            var eventHandler = self["plupload::"+eventName],
+		// Add to the current one
+		uploadButton.attr('id', self.uploadButtonId);
 
-                elementEventHandler = (function(){
-                    var eventHandlers = (self.uploader.data("events") || {})[eventName];
-                    return (eventHandlers) ? eventHandlers[0].handler : undefined;
-                })(),
+		// Reposition button
+		self.plupload.refresh();
+	},
 
-                elementEventHandlerArgs;
+	eventHandler: function(eventName, args) {
 
-            if ($.isFunction(eventHandler)) {
+		var eventHandler = self["plupload::"+eventName],
 
-                elementEventHandlerArgs = eventHandler.apply(self, args);
-            }
+			elementEventHandler = (function(){
+				var eventHandlers = (self.uploader.data("events") || {})[eventName];
+				return (eventHandlers) ? eventHandlers[0].handler : undefined;
+			})(),
 
-            if (elementEventHandlerArgs!==false) {
+			elementEventHandlerArgs;
 
-                self.uploader.trigger(eventName, elementEventHandlerArgs || args);
-            }
-        },
+		if ($.isFunction(eventHandler)) {
 
-        "plupload::FileUploaded": function(up, file, data, handler) {
+			elementEventHandlerArgs = eventHandler.apply(self, args);
+		}
 
-            var response;
+		if (elementEventHandlerArgs!==false) {
 
-            try {
+			self.uploader.trigger(eventName, elementEventHandlerArgs || args);
+		}
+	},
 
-                response = eval('('+data.response+')');
+	"plupload::FileUploaded": function(up, file, data, handler) {
 
-            } catch(e) {
+		var response;
 
-                response = {
-                    type: "error",
-                    message: "Unable to parse server response.",
-                    data: data
-                };
-            }
+		try {
 
-            // If response type is an error, trigger FileError event
-            if (response.type=="error") {
+			response = eval('('+data.response+')');
 
-                self.uploader.trigger("FileError", [up, file, response]);
+		} catch(e) {
 
-                // This ensure the FileUploaded event
-                // doesn't get triggered anymore.
-                return false;
-            }
+			response = {
+				type: "error",
+				message: "Unable to parse server response.",
+				data: data
+			};
+		}
 
-            // Trigger FileUploaded event with the following params
-            return [up, file, response];
-        },
+		// If response type is an error, trigger FileError event
+		if (response.type=="error") {
 
-        "plupload::Error": function(up, error) {
+			self.uploader.trigger("FileError", [up, file, response]);
 
-            try { console.log('plupload Error: ', up, error); } catch(e) {};
-        }
+			// This ensure the FileUploaded event
+			// doesn't get triggered anymore.
+			return false;
+		}
 
-	}}
+		// Trigger FileUploaded event with the following params
+		return [up, file, response];
+	},
 
-);
+	"plupload::Error": function(up, error) {
+
+		try { console.log('plupload Error: ', up, error); } catch(e) {};
+	}
+
+}});
