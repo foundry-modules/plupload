@@ -393,10 +393,24 @@
 					}
 				}
 
+				var camera = up.settings.camera;
+				if (camera && /(iPad|iPhone|iPod)/g.test(navigator.userAgent)) {
+
+					// Disable multiple selection
+					uploader.settings.multi_selection = false;
+
+					mimes = $.map(camera.split(","), function(mime){
+						return (mime.indexOf("/") < 0) ? mime + "/*" : mime;
+					});
+				} else {
+					camera = false;
+				}
+
 				// Insert the input inside the input container
 				inputContainer.innerHTML = '<input id="' + uploader.id + '_html5" ' + ' style="font-size:999px"' +
 											' type="file" accept="' + mimes.join(',') + '" ' +
-											(uploader.settings.multi_selection && uploader.features.multi_selection ? 'multiple="multiple"' : '') + ' />';
+											(uploader.settings.multi_selection && uploader.features.multi_selection ? 'multiple="multiple"' : '') +
+											(camera ? 'capture="camera"' : '') + ' />';
 
 				inputContainer.scrollTop = 100;
 				inputFile = document.getElementById(uploader.id + '_html5');
