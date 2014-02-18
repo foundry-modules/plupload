@@ -210,7 +210,7 @@
 						}
 
 						// Get result
-						result = el.body.innerHTML;
+						result = el.documentElement.innerText || el.documentElement.textContent;
 
 						// Assume no error
 						if (result) {
@@ -414,7 +414,7 @@
 					plupload.each(fileIds, function(id, i) {
 						form = getById('form_' + id);
 						if (form) {
-							container.removeChild(form);
+							form.parentNode.removeChild(form);
 						}
 					});
 

@@ -1,8 +1,10 @@
 bin
-js
 obj
+libs
+wiki
 tmp
 docs
+src/moxie
 jslint.xml
 .settings
 .project
@@ -11,9 +13,7 @@ jslint.xml
 *.patch
 *.bak
 *.log
-*.min.js
-*.xap
-*.swf
 *.suo
 *.user
 .DS_Store
+node_modules

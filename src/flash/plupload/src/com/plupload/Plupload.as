@@ -73,11 +73,11 @@ package com.plupload {
 		private function init(e:Event = null):void {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 
-			// Allow upload cross domain upload
-			Security.allowDomain("*");
+			// Allow cross domain scripting access
+			// Security.allowDomain("*");
 
 			// Setup id
-			this.id = this.stage.loaderInfo.parameters["id"];
+			this.id = (this.stage.loaderInfo.parameters["id"]).toString().replace(/[^\w]/g, ''); // allow only [a-zA-Z0-9_]
 
 			// Setup file reference list
 			this.fileRefList = new FileReferenceList();

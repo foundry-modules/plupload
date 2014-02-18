@@ -74,7 +74,7 @@
 		"text/css,css," +
 		"text/csv,csv," +
 		"text/rtf,rtf," +
-		"video/mpeg,mpeg mpg mpe," +
+		"video/mpeg,mpeg mpg mpe m2v," +
 		"video/quicktime,qt mov," +
 		"video/mp4,mp4," +
 		"video/x-m4v,m4v," +
@@ -82,6 +82,8 @@
 		"video/x-ms-wmv,wmv," +
 		"video/avi,avi," +
 		"video/webm,webm," +
+		"video/3gpp,3gp," +
+		"video/3gpp2,3g2," +
 		"video/vnd.rn-realvideo,rv," +
 		"application/vnd.oasis.opendocument.formula-template,otf," +
 		"application/octet-stream,exe"
@@ -258,6 +260,7 @@
 
 			return {
 				windows: navigator.platform.indexOf('Win') !== -1,
+				android: /Android/.test(userAgent),
 				ie: !webkit && !opera && (/MSIE/gi).test(userAgent) && (/Explorer/gi).test(nav.appName),
 				webkit: webkit,
 				gecko: !webkit && /Gecko/.test(userAgent),
@@ -482,7 +485,7 @@
 			}
 
 			// Use getBoundingClientRect on IE 6 and IE 7 but not on IE 8 in standards mode
-			if (node && node.getBoundingClientRect && ((navigator.userAgent.indexOf('MSIE') > 0) && (doc.documentMode < 8))) {
+			if (node && node.getBoundingClientRect && plupload.ua.ie && (!doc.documentMode || doc.documentMode < 8)) {
 				nodeRect = getIEPos(node);
 				rootRect = getIEPos(root);
 

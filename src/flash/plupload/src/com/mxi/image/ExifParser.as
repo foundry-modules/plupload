@@ -186,11 +186,15 @@ package com.mxi.image {
 		public function EXIF():Object {	
 			var Exif:Object;
 						
-			if (!offsets['exifIFD'] || offsets['exifIFD'] === null) {
+			if (!offsets.hasOwnProperty('exifIFD') || offsets['exifIFD'] === null) {
 				return null;
 			}
 						
-			Exif = extractTags(offsets['exifIFD'], tags.exif);
+			try { // survive invalid offsets
+				Exif = extractTags(offsets['exifIFD'], tags.exif);
+			} catch (ex:Error) {
+				return null;
+			}
 			
 			// fix formatting of some tags
 			if (Exif.hasOwnProperty('ExifVersion') && Exif.ExifVersion is Array) {
@@ -206,12 +210,17 @@ package com.mxi.image {
 		public function GPS():Object {
 			var Gps:Object;
 			
-			if (!offsets['gpsIFD'] || offsets['gps'] === null) {
+			if (!offsets.hasOwnProperty('gpsIFD') || offsets['gps'] === null) {
 				return null;
 			}
 			
-			Gps = extractTags(offsets['gpsIFD'], tags.gps);	
-			if (Gps.hasOwnProperty('GPSVersionID')) {
+			try { // survive invalid offsets
+				Gps = extractTags(offsets['gpsIFD'], tags.gps);	
+			} catch (ex:Error) {
+				return null;
+			}
+			
+			if (Gps.hasOwnProperty('GPSVersionID') && Gps.GPSVersionID is Array) {
 				Gps.GPSVersionID = Gps.GPSVersionID.join('.');
 			}
 				

@@ -115,6 +115,7 @@ namespace Moxiecode.Plupload {
 			imageWidth = Convert.ToInt32(settings["image_width"]);
 			imageHeight = Convert.ToInt32(settings["image_height"]);
 			imageQuality = Convert.ToInt32(settings["image_quality"]);
+
 			this.fileDataName = (string)settings["file_data_name"];
 			this.multipart = Convert.ToBoolean(settings["multipart"]);
 			this.multipartParams = (Dictionary<string, object>)settings["multipart_params"];
@@ -129,7 +130,8 @@ namespace Moxiecode.Plupload {
 
             try {
                 // Is jpeg and image size is defined
-				if (Regex.IsMatch(this.name, @"\.(jpeg|jpg|png)$", RegexOptions.IgnoreCase) && (imageWidth != 0 || imageHeight != 0)) {
+				if (Regex.IsMatch(this.name, @"\.(jpeg|jpg|png)$", RegexOptions.IgnoreCase) && (imageWidth != 0 || imageHeight != 0 || imageQuality != 0))
+				{
 					if (Regex.IsMatch(this.name, @"\.png$"))
 						this.imageStream = this.ResizeImage(this.info.OpenRead(), imageWidth, imageHeight, imageQuality, ImageType.Png);
 					else
@@ -191,6 +193,8 @@ namespace Moxiecode.Plupload {
 			if (!this.multipart) {
 				if (url.IndexOf('?') == -1) {
 					url += '?';
+				} else {
+					url += '&';
 				}
 
                 url += "name=" + Uri.EscapeDataString(this.targetName);
@@ -491,11 +495,23 @@ namespace Moxiecode.Plupload {
 				bitmapImage.SetSource(image_stream);
 				writableBitmap = new WriteableBitmap(bitmapImage);
 
+				if (width == 0) {
+					width = writableBitmap.PixelWidth;
+				}
+
+				if (height == 0) {
+					height = writableBitmap.PixelHeight;
+				}
+
 				double scale = Math.Min((double) width / writableBitmap.PixelWidth, (double) height / writableBitmap.PixelHeight);
 
 				// No resize needed
-				if (scale >= 1.0)
+				if (scale >= 1.0 && (quality == 0 || type != ImageType.Jpeg))
 					return image_stream;
+
+				if (quality == 0) {
+					quality = 90;
+				}
 
 				// Setup shorter names and pixelbuffers
 				int w = writableBitmap.PixelWidth;
@@ -519,17 +535,24 @@ namespace Moxiecode.Plupload {
 				}
 
 				// Create new FluxJpeg image based on pixel data
-				FluxJpeg.Core.Image jpegImage = new FluxJpeg.Core.Image(new ColorModel {
+				Image jpegImage = new Image(new ColorModel {
 					colorspace = ColorSpace.RGB
 				}, imageRaster);
 
-				// Calc new proportional size
-				width = (int) Math.Round(writableBitmap.PixelWidth * scale);
-				height = (int) Math.Round(writableBitmap.PixelHeight * scale);
-
-				// Resize the image
 				ImageResizer resizer = new ImageResizer(jpegImage);
-				Image resizedImage = resizer.Resize(width, height, FluxJpeg.Core.Filtering.ResamplingFilters.LowpassAntiAlias);
+				Image resizedImage;
+
+				if (scale < 1.0) {
+					// Calc new proportional size
+					width = (int) Math.Round(writableBitmap.PixelWidth * scale);
+					height = (int) Math.Round(writableBitmap.PixelHeight * scale);
+
+					// Resize the image
+					resizedImage = resizer.Resize(width, height, FluxJpeg.Core.Filtering.ResamplingFilters.LowpassAntiAlias);
+				} else {
+					resizedImage = jpegImage;
+				}
+
 				Stream imageStream = new MemoryStream();
 
 				if (type == ImageType.Jpeg) {

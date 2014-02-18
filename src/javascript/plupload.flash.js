@@ -186,15 +186,20 @@
 				
 				flashContainer = document.getElementById(up.id + '_flash_container');
 				if (flashContainer) {
-					container.removeChild(flashContainer);
+					flashContainer.parentNode.removeChild(flashContainer);
 				}
 			});
 
 			// Wait for Flash to send init event
-			uploader.bind("Flash:Init", function() {	
+			uploader.bind("Flash:Init", function() {				
 				var lookup = {}, i;
 
-				getFlashObj().setFileFilters(uploader.settings.filters, uploader.settings.multi_selection);
+				try {
+					getFlashObj().setFileFilters(uploader.settings.filters, uploader.settings.multi_selection);
+				} catch (ex) {
+					callback({success : false});
+					return;
+				}
 
 				// Prevent eventual reinitialization of the instance
 				if (initialized[uploader.id]) {
