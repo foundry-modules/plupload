@@ -38,7 +38,7 @@ desc("Build mOxie");
 task("moxie", [], function (params) {
 	var moxieDir = "./src/moxie";
 	var currentDir = process.cwd();
-
+	
 	process.chdir(moxieDir);
 	exec("jake", function(error, stdout, stderr) {
 		if (error) {
@@ -57,12 +57,12 @@ task("mkjs", [], function (params) {
 	var uglify = tools.uglify;
 
 	var targetDir = "./js", moxieDir = "src/moxie";
-
+	
 	// Clear previous versions
-	// if (fs.existsSync(targetDir)) {
-	// 	jake.rmRf(targetDir);
-	// }
-	// fs.mkdirSync(targetDir, 0755);
+	if (fs.existsSync(targetDir)) {
+		jake.rmRf(targetDir);
+	}
+	fs.mkdirSync(targetDir, 0755);
 
 	// Include Plupload source
 	tools.copySync('./src/plupload.js', "js/plupload.dev.js");
@@ -71,7 +71,7 @@ task("mkjs", [], function (params) {
 	fs.writeFileSync(targetDir + '/plupload.cov.js', new Instrument(fs.readFileSync('./src/plupload.js').toString(), {
 		name: 'Plupload'
 	}).instrument());
-
+	
 
 	// Copy compiled moxie files
 	tools.copySync(moxieDir + "/bin/flash/Moxie.swf", "js/Moxie.swf");
