@@ -1023,8 +1023,8 @@ plupload.Uploader = function(options) {
 			runtime_order: settings.runtimes,
 			required_caps: settings.required_features,
 			preferred_caps: preferred_caps,
-			swf_url: settings.flash_swf_url,
-			xap_url: settings.silverlight_xap_url
+			swf_url: $.path + "/scripts/plupload2/Moxie.swf",
+			xap_url: $.path + "/scripts/plupload2/Moxie.xap"
 		};
 
 		// add runtime specific options if any
