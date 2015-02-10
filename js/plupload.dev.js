@@ -2136,6 +2136,18 @@ plupload.Uploader = function(options) {
             }, 0, scope);
         },
 
+        // FOUNDRY_HACK
+        // Expose addFileInput
+        addFileInput: function() {
+            return addFileInput.apply(this, arguments);
+        },
+
+        // FOUNDRY_HACK
+        // Expose addFileDrop
+        addFileDrop: function() {
+            return addFileDrop.apply(this, arguments);
+        },
+
         /**
          * Removes the specified event listener.
          *
