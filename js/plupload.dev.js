@@ -1787,6 +1787,20 @@ plupload.Uploader = function(options) {
         init : function() {
             var self = this;
 
+            // FOUNDRY_HACK
+            // Carry plupload events to jQuery
+            var trigger = self.trigger;
+
+            self.trigger = function(eventName) {
+
+                var result = trigger.apply(this, arguments);
+
+                $(settings.container || settings.browse_button)
+                    .trigger("plupload" + eventName, [self].concat($.makeArray(arguments).slice(1)));
+
+                return result;
+            }
+
             if (typeof(settings.preinit) == "function") {
                 settings.preinit(self);
             } else {
