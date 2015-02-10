@@ -2390,4 +2390,138 @@ plupload.File = (function() {
 
 $.plupload2 = plupload;
 
+// FOUNDRY_HACK
+// Helper method to normalize inline options
+function processInlineOptions(options) {
+
+    var inlineOptions = {};
+
+    $.each(options, function(prop, val) {
+
+        prop = prop.replace(/-/g,"_");
+
+        if (/filters|headers|multipart_params|resize|mime_types/.test(prop)) {
+            val = JSON.parse(val);
+        }
+
+        if (/multipart|prevent_duplicates|unique_names/.test(prop)) {
+            val = /true|1/i.test(val);
+        }
+
+        if (/max_retries/.test(prop)) {
+            val = parseInt(val);
+        }
+
+        if (/extensions/.test(prop)) {
+            (inlineOptions.filters || (inlineOptions.filters = {}))["mime_types"] =
+                [{title: "Accepted files", extensions: val}]
+        }
+
+        if (/prevent_duplicates|max_file_size/.test(prop)) {
+            (inlineOptions.filters || (inlineOptions.filters = {}))[prop] = val;
+        } else {
+            inlineOptions[prop] = val;
+        }
+
+    });
+
+    return inlineOptions;
+}
+
+// FOUNDRY_HACK
+// Added ability to create plupload instance using $(el).plupload2();
+$.fn.plupload2 = function(options, autoinit) {
+
+    var container = $(this[0]);
+
+    // If there is an existing uploader, stop.
+    if (container.data("uploader")) return;
+
+    // Normalize arguments
+    var autoinit = autoinit===undefined ? true : autoinit,
+
+        defaultOptions = {
+            runtimes: "html5, flash, html4",
+            browse_button: container.find("[data-plupload-browse-button]")[0],
+            drop_element: container.find("[data-plupload-drop-element]")[0]
+        },
+
+        inlineOptions = processInlineOptions(container.htmlData("plupload", false)),
+
+        options = $.extend(defaultOptions, inlineOptions, options),
+
+        // Create uploader instance
+        uploader = new $.plupload2.Uploader(options);
+
+    // Store uploader in data
+    container.data("uploader", uploader);
+
+    // Add support for multiple browse button
+    container
+        .on("mouseover", "[data-plupload-browse-button]", function(){
+
+            var button = $(this);
+
+            // If fileinput has been implemented, return.
+            if (button.data("fileinput")) return;
+
+            // Hot generate a new fileinput
+            // Wiki: https://github.com/moxiecode/moxie/wiki/FileInput
+            var fileinput = new $.moxie.FileInput({
+                browse_button: button[0],
+                container: button.data("data-fileinput-container") || button.parent()[0],
+                multiple: uploader.features.multi_selection
+            });
+
+            fileinput.onchange = function(event) {
+                uploader.addFile(fileinput.files);
+            };
+
+            // Store fileinput instance in button data
+            button.data("fileinput", fileinput);
+
+            fileinput.init();
+        });
+
+
+    // When uploader is destroyed, remove from container data.
+    uploader.bind("Destroy", function(){
+        container.removeData("uploader");
+    });
+
+    autoinit && uploader.init();
+
+    return uploader;
+}
+
+// Elements
+// data-plupload-browse-button
+// data-plupload-drop-element
+
+// Special
+// data-plupload-extensions
+
+// String
+// data-plupload-url
+// data-plupload-chunk-size
+// data-plupload-file-data-name
+// data-plupload-flash-swf-url
+// data-plupload-runtimes
+// data-plupload-silverlight-xap-url
+
+// JSON
+// data-plupload-filters
+// data-plupload-headers
+// data-plupload-multipart-params
+// data-plupload-resize
+
+// Boolean
+// data-plupload-multipart
+// data-plupload-prevent-duplicates (special)
+// data-plupload-unique-names
+
+// Integer
+// data-plupload-max-retries
+// data-plupload-max-file-size (special)
+
 }(window, $.moxie));
