@@ -3506,6 +3506,19 @@ define('moxie/file/FileInput', [
 				this.files = null;
 			}
 		});
+
+		// FOUNDRY_HACK
+		// Carry FileInput events over to jQuery
+		var trigger = self.trigger;
+
+		self.trigger = function(eventName) {
+
+			var result = trigger.apply(self, arguments);
+
+			$(options.browse_button).trigger("fileinput" + eventName, [self].concat($.makeArray(arguments).slice(1)));
+
+			return result;
+		}
 	}
 
 	FileInput.prototype = EventTarget.instance;
