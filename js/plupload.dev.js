@@ -1942,7 +1942,9 @@ plupload.Uploader = function(options) {
          * @param {plupload.File|mOxie.File|File|Node|Array} file File or files to add to the queue.
          * @param {String} [fileName] If specified, will be used as a name for the file
          */
-        addFile : function(file, fileName) {
+         // FOUNDRY_HACK
+         // Allow passing in of file-specific upload settings
+        addFile : function(file, fileName, origin) {
             var self = this
             , queue = []
             , filesAdded = []
@@ -1992,6 +1994,10 @@ plupload.Uploader = function(options) {
                     if (fileName) {
                         file.name = fileName;
                     }
+
+                    // FOUNDRY_HACK
+                    // Always have a way to track back the origin of the file.
+                    file.origin = origin;
 
                     queue.push(function(cb) {
                         // run through the internal and user-defined filters, if any
