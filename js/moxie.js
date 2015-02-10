@@ -3701,6 +3701,19 @@ define('moxie/file/FileDrop', [
 				this.files = null;
 			}
 		});
+
+		// FOUNDRY_HACK
+		// Carry FileDrop events over to jQuery
+		var trigger = self.trigger;
+
+		self.trigger = function(eventName) {
+
+			var result = trigger.apply(self, arguments);
+
+			$(options.drop_zone).trigger("filedrop" + eventName, [self].concat($.makeArray(arguments).slice(1)));
+
+			return result;
+		}
 	}
 
 	FileDrop.prototype = EventTarget.instance;
