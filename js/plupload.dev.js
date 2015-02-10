@@ -1692,8 +1692,8 @@ plupload.Uploader = function(options) {
         multipart: true,
         multi_selection: true,
         file_data_name: 'file',
-        flash_swf_url: 'js/Moxie.swf',
-        silverlight_xap_url: 'js/Moxie.xap',
+        flash_swf_url: $.path + '/scripts/plupload2/js/Moxie.swf',
+        silverlight_xap_url: $.path + '/scripts/plupload2/js/Moxie.xap',
         filters: {
             mime_types: [],
             prevent_duplicates: false,
@@ -1964,6 +1964,10 @@ plupload.Uploader = function(options) {
             , filesAdded = []
             , ruid
             ;
+
+            // FOUNDRY_HACK
+            // Remove filename from options property
+            options && delete options.filename;
 
             function filterFile(file, cb) {
                 var queue = [];
