@@ -3319,6 +3319,10 @@ define('moxie/file/FileInput', [
 			throw new x.DOMException(x.DOMException.NOT_FOUND_ERR);
 		}
 
+		// FOUNDRY_HACK
+		// Store fileinput instance in button
+		$(browseButton).data("fileinput", self);
+
 		// figure out the options
 		defaults = {
 			accept: [{
