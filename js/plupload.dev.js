@@ -1099,6 +1099,7 @@ plupload.Uploader = function(options) {
         // FOUNDRY_HACK
         // The options normalizing sequence here has been rearranged.
         var self = this,
+            settings = this.settings,
             defaultOptions = {
                 accept: settings.filters.mime_types,
                 name: settings.file_data_name,
@@ -1171,6 +1172,7 @@ plupload.Uploader = function(options) {
     function addFileDrop(el, options) {
 
         var self = this,
+            settings = this.settings,
             options = plupload.extend({autoinit: true}, options, {
                 drop_zone: el
             }),
@@ -2430,9 +2432,9 @@ function processInlineOptions(options) {
             val = parseInt(val);
         }
 
+        // Skip extensions we'll do it later
         if (/extensions/.test(prop)) {
-            (inlineOptions.filters || (inlineOptions.filters = {}))["mime_types"] =
-                [{title: "Accepted files", extensions: val}]
+            return;
         }
 
         if (/prevent_duplicates|max_file_size/.test(prop)) {
@@ -2456,20 +2458,28 @@ $.fn.plupload2 = function(options, autoinit) {
     if (container.data("uploader")) return;
 
     // Normalize arguments
-    var autoinit = autoinit===undefined ? true : autoinit,
+    var autoinit = autoinit===undefined ? true : autoinit;
 
-        defaultOptions = {
+    var defaultOptions = {
             runtimes: "html5, flash, html4",
             browse_button: container.find("[data-plupload-browse-button]")[0],
             drop_element: container.find("[data-plupload-drop-element]")[0]
-        },
+        };
 
-        inlineOptions = processInlineOptions(container.htmlData("plupload", false)),
+    var inlineOptions = processInlineOptions(container.htmlData("plupload", false));
 
-        options = $.extend(defaultOptions, inlineOptions, options),
+    var options = $.extend(defaultOptions, inlineOptions, options);
 
-        // Create uploader instance
-        uploader = new $.plupload2.Uploader(options);
+    // Convert options.extensions into options.filters.mime_types
+    var extensions = options.extensions;
+
+    if (extensions) {
+        (options.filters || (options.filters = {}))["mime_types"] =
+            [{title: "Accepted files", extensions: extensions}];
+    }
+
+    // Create uploader instance
+    var uploader = new $.plupload2.Uploader(options);
 
     // Store uploader in data
     container.data("uploader", uploader);
@@ -2483,24 +2493,13 @@ $.fn.plupload2 = function(options, autoinit) {
             // If fileinput has been implemented, return.
             if (button.data("fileinput")) return;
 
-            // Hot generate a new fileinput
-            // Wiki: https://github.com/moxiecode/moxie/wiki/FileInput
-            var fileinput = new $.moxie.FileInput({
-                browse_button: button[0],
-                container: button.data("data-fileinput-container") || button.parent()[0],
-                multiple: uploader.features.multi_selection
-            });
-
-            fileinput.onchange = function(event) {
-                uploader.addFile(fileinput.files);
+            var options = {
+                container: button.data("data-fileinput-container") || button.parent()[0]
             };
 
-            // Store fileinput instance in button data
-            button.data("fileinput", fileinput);
-
-            fileinput.init();
+            // Add file input
+            uploader.addFileInput(button[0], options);
         });
-
 
     // When uploader is destroyed, remove from container data.
     uploader.bind("Destroy", function(){
