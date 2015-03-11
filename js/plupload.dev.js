@@ -2424,7 +2424,7 @@ function processInlineOptions(options) {
             val = JSON.parse(val);
         }
 
-        if (/multipart|prevent_duplicates|unique_names/.test(prop)) {
+        if (/multipart|prevent_duplicates|unique_names|multi_selection/.test(prop)) {
             val = /true|1/i.test(val);
         }
 
