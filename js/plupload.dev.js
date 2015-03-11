@@ -1174,7 +1174,8 @@ plupload.Uploader = function(options) {
         var self = this,
             settings = this.settings,
             options = plupload.extend({autoinit: true}, options, {
-                drop_zone: el
+                drop_zone: el,
+                multiple: settings.multi_selection
             }),
             fileDrop = new o.FileDrop(options);
 

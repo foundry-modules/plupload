@@ -3643,7 +3643,10 @@ define('moxie/file/FileDrop', [
 			}],
 			required_caps: {
 				drag_and_drop: true
-			}
+			},
+			// FOUNDRY_HACK
+			// Ability to disable multiple files.
+			multiple: true
 		};
 
 		options = typeof(options) === 'object' ? Basic.extend({}, defaults, options) : defaults;
@@ -3681,6 +3684,13 @@ define('moxie/file/FileDrop', [
 						var files = runtime.exec.call(self, 'FileDrop', 'getFiles');
 
 						self.files = [];
+
+						// FOUNDRY_HACK
+						// Support for disabling multiple files.
+						// If multiple is disabled, use only the first file dropped.
+						if (!options.multiple) {
+							files = files[0];
+						}
 
 						Basic.each(files, function(file) {
 							self.files.push(new File(self.ruid, file));
