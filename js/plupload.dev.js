@@ -2427,6 +2427,7 @@ function processInlineOptions(options) {
 
         if (/multipart|prevent_duplicates|unique_names|multi_selection/.test(prop)) {
             val = /true|1/i.test(val);
+            val = !val ? "0" : "1";
         }
 
         if (/max_retries/.test(prop)) {
